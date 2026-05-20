@@ -7,7 +7,7 @@ A data-driven analysis of Saigon's food scene across 19 districts, combining Ope
 This project investigates the spatial distribution and digital representation of food establishments across HCMC. A key finding is that OSM data reflects **digital presence**, not actual restaurant density — revealing a measurable digital divide between central and peripheral districts.
 
 ## Project Structure
-## 🔍 Key Findings
+## Key Findings
 
 - **Central districts dominate** — Quan 1 and Quan 3 account for 35%+ of all mapped places, driven by digital-active customer bases
 - **Digital inequality exists** — OSM coverage correlates with socioeconomic profile, not actual food density
