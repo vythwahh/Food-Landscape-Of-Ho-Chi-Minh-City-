@@ -66,7 +66,15 @@ plt.savefig('plot_cluster_profile.png', dpi=150)
 # plt.show()  # Commented out to prevent blocking the script execution
 
 print(cluster_profile.to_string())
+ 
+df = df.rename(columns={'Latitude': 'latitude', 'Longitude': 'longitude', 'lat': 'latitude', 'lon': 'longitude'})
 
+ 
+ 
+
+# Export the dataset with cluster info to a CSV file for the Streamlit Dashboard
+df.to_csv('cleaned_food_data.csv', index=False)
+print("Successfully exported cleaned_food_data.csv with standardized columns!")
 # Export the dataset with cluster info to a CSV file for the Streamlit Dashboard
 df.to_csv('cleaned_food_data.csv', index=False)
 print("Successfully exported cleaned_food_data.csv!")
