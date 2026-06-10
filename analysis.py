@@ -44,7 +44,10 @@ plt.title('Digital Divide: OSM Coverage vs Data Quality by District')
 plt.legend()
 plt.tight_layout()
 plt.savefig('plot_digital_divide.png', dpi=150)
-plt.show()
+# plt.show()  # 
+
+ 
+
 
 # Plot 2: Cluster characterization
 cluster_profile = df.groupby('cluster').agg(
@@ -60,5 +63,10 @@ plt.xlabel('Cluster')
 plt.xticks(rotation=15)
 plt.tight_layout()
 plt.savefig('plot_cluster_profile.png', dpi=150)
-plt.show()
+# plt.show()  # Commented out to prevent blocking the script execution
+
 print(cluster_profile.to_string())
+
+# Export the dataset with cluster info to a CSV file for the Streamlit Dashboard
+df.to_csv('cleaned_food_data.csv', index=False)
+print("Successfully exported cleaned_food_data.csv!")
