@@ -52,3 +52,24 @@ class FoodscapeDataPipeline:
             'lat': 'latitude', 'lon': 'longitude'
         })
         return self
+    # 1 . ADVANCED DATA IMPUTATION
+    def impute_missing_districts(self):
+        """Predicts missing districts based on coordinates falling inside GeoJSON Polygons."""
+        if not self.districts_boundary:
+            logger.warning("Skipping district imputation: No GeoJSON boundaries loaded.")
+            return self
+
+        missing_mask = self.df['district'].isna() | (self.df['district'] == 'unknown')
+        impute_count = 0
+
+        for idx, row in self.df[missing_mask].iterrows():
+            if pd.notna(row['latitude']) and pd.notna(row['longitude']):
+                point = Point(row['longitude'], row['latitude']) # Shapely uses (X, Y) layout -> (lon, lat)
+                for district_name, polygon in self.districts_boundary.items():
+                    if polygon.contains(point):
+                        self.df.at[idx, 'district'] = district_name
+                        impute_count += 1
+                        break
+        
+        logger.info(f"Spatial District Imputation complete. Resolved {impute_count} missing rows.")
+        return self
