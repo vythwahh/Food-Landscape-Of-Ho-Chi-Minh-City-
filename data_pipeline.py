@@ -118,6 +118,33 @@ class FoodscapeDataPipeline:
 
         logger.info(f"Spatial Cuisine Imputation complete. Resolved {impute_count} missing cells using KNN.")
         return self
+    def engineer_features(self):
+        """Generates advanced spatial density, proximity, and regional diversity attributes."""
+        logger.info("Initiating advanced spatial feature engineering pipeline...")
+        coords_radians = np.radians(self.df[['latitude', 'longitude']].values)
+        tree = BallTree(coords_radians, metric='haversine')
+        earth_radius_meters = 6371000.0
+
+        radius_1km_radians = 1000.0 / earth_radius_meters
+        density_counts = tree.query_radius(coords_radians, r=radius_1km_radians, count_only=True)
+        self.df['food_density_index'] = density_counts - 1
+
+        notre_dame_rad = np.radians([10.7798, 106.6990])
+        lat_diff = coords_radians[:, 0] - notre_dame_rad[0]
+        lon_diff = coords_radians[:, 1] - notre_dame_rad[1]
+        a = np.sin(lat_diff/2)**2 + np.cos(coords_radians[:, 0]) * np.cos(notre_dame_rad[0]) * np.sin(lon_diff/2)**2
+        self.df['distance_to_center_hub_km'] = 2 * np.arcsin(np.sqrt(a)) * (earth_radius_meters / 1000.0)
+
+        diversity_map = self.df.groupby('district')['cuisine'].nunique().to_dict()
+        self.df['district_cuisine_diversity_score'] = self.df['district'].map(diversity_map).fillna(0)
+
+        logger.info("Feature engineering phase executed successfully.")
+        return self
+
+    def save_pipeline_output(self, output_path):
+        """Serializes processed dataset to designated CSV file destination."""
+        self.df.to_csv(output_path, index=False)
+        logger.info(f"Pipeline output successfully synchronized to {output_path}")
     # 2. FEATURE ENGINEERING
     def engineer_features(self):
         """Generates advanced spatial density, proximity, and regional diversity attributes."""
